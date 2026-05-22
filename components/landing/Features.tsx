@@ -1,4 +1,4 @@
-export default function Features() {
+export function Features() {
     return (
         <div>
             <p>features</p>

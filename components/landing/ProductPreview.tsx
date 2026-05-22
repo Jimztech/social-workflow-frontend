@@ -1,4 +1,4 @@
-export default function ProductPreview() {
+export function ProductPreview() {
     return (
         <div>
             <p>product preview</p>

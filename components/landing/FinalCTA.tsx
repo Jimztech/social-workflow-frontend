@@ -1,4 +1,4 @@
-export default function FinalCTA() {
+export function FinalCTA() {
     return (
         <div>
             <p>Final cta</p>

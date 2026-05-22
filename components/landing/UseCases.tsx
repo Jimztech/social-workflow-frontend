@@ -1,4 +1,4 @@
-export default function UseCases() {
+export function UseCases() {
     return (
         <div>
             <p>usecases</p>

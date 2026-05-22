@@ -1,4 +1,4 @@
-export default function Testimonials() {
+export function Testimonials() {
     return (
         <div>
             <p>testimonial</p>
