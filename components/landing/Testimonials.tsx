@@ -1,3 +1,5 @@
+"use client";
+
 const items = [
   { quote: "I finally stay consistent without thinking about it.", name: "Maya R.", role: "Content creator", initials: "MR" },
   { quote: "Posting across platforms is now effortless.", name: "Daniel K.", role: "Founder", initials: "DK" },

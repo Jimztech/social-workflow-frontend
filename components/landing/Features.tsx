@@ -1,3 +1,5 @@
+"use client";
+
 import { Sparkles, CalendarClock, LayoutGrid } from "lucide-react";
 import { FaInstagram, FaXTwitter, FaLinkedin } from "react-icons/fa6";
 import { IconType } from "react-icons";

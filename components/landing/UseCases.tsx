@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Camera, Megaphone, Rocket, Briefcase, LucideIcon } from "lucide-react";
 

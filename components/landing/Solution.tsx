@@ -1,3 +1,5 @@
+"use client";
+
 import { Sparkles, Calendar, Send, ArrowRight } from "lucide-react";
 
 const steps = [

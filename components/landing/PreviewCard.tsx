@@ -1,3 +1,5 @@
+"use client";
+
 import { Heart, MessageCircle, Repeat2, Send, Bookmark, ThumbsUp, Share2 } from "lucide-react";
 import { FaInstagram, FaLinkedin } from "react-icons/fa6";
 import Image from "next/image";
