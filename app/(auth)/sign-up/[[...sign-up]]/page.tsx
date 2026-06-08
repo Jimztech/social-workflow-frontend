@@ -50,6 +50,43 @@ export default function SignUpPage() {
   //   }
   // };
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!signUp) return;
+
+  //   if (password !== confirm) {
+  //     setError("Passwords don't match.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     const { error } = await signUp.create({
+  //       emailAddress: email,
+  //       password,
+  //     });
+
+  //     if (error) {
+  //       setError(error.longMessage ?? "Sign up failed. Please try again.");
+  //       return;
+  //     }
+
+  //     if (signUp.status === "complete") {
+  //       await signUp.finalize();
+  //       router.push("/dashboard");
+  //     } else {
+  //       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+  //       router.push("/verify-email");
+  //     }
+  //   } catch (err: any) {
+  //     setError(err?.errors?.[0]?.message ?? "Sign up failed. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!signUp) return;
@@ -63,7 +100,7 @@ export default function SignUpPage() {
     setError(null);
 
     try {
-      const { error } = await signUp.create({
+      const { error } = await signUp.password({
         emailAddress: email,
         password,
       });
@@ -77,7 +114,7 @@ export default function SignUpPage() {
         await signUp.finalize();
         router.push("/dashboard");
       } else {
-        await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+        await signUp.verifications.sendEmailCode();
         router.push("/verify-email");
       }
     } catch (err: any) {
@@ -89,9 +126,10 @@ export default function SignUpPage() {
 
   const handleGoogle = async () => {
     if (!signUp) return;
-    await signUp.create({
+    await signUp.sso({
       strategy: "oauth_google",
-      transfer: true,
+      redirectUrl: `${window.location.origin}/sso-callback`,
+      redirectCallbackUrl: "/dashboard",
     });
   };
 

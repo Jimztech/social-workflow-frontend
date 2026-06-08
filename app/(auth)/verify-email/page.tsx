@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/input-otp";
 
 export default function VerifyEmailPage() {
-  const { signUp, isLoaded } = useSignUp();
+  const { signUp } = useSignUp();
   const router = useRouter();
   const [otp, setOtp] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -26,14 +26,14 @@ export default function VerifyEmailPage() {
 
   useEffect(() => {
     // If there's no pending sign-up, redirect back to sign-up
-    if (isLoaded && !signUp?.emailAddress) {
+    if (signUp && !signUp?.emailAddress) {
       router.push("/sign-up");
     }
-  }, [isLoaded, signUp, router]);
+  }, [signUp, router]);
 
   const handleVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signUp) return;
 
     if (otp.length !== 6) {
       setError("Please enter all 6 digits.");
@@ -44,35 +44,42 @@ export default function VerifyEmailPage() {
     setError(null);
 
     try {
-      const result = await signUp.attemptEmailAddressVerification({ code: otp });
+      const { error } = await signUp.verifications.verifyEmailCode({ code: otp });
 
-      if (result.status === "complete") {
+      if (error) {
+        setError(error.longMessage ?? "Invalid code. Please try again.");
+        return;
+      }
+
+      if (signUp.status === "complete") {
+        await signUp.finalize();
         setSuccess(true);
         setTimeout(() => router.push("/dashboard"), 1200);
       }
     } catch (err: any) {
-      setError(err?.errors?.[0]?.message ?? "Invalid code. Please try again.");
+      setError(err?.errors?.[0]?.message ?? "Verification failed.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResend = async () => {
-    if (!isLoaded) return;
+    if (!signUp) return;
     setResending(true);
     setError(null);
     setOtp("");
 
     try {
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      const { error } = await signUp.verifications.sendEmailCode();
+      if (error) setError(error.longMessage ?? "Failed to resend code.");
     } catch (err: any) {
-      setError(err?.errors?.[0]?.message ?? "Failed to resend code. Try again.");
+      setError("Failed to resend code. Try again.");
     } finally {
       setResending(false);
     }
   };
 
-  if (!isLoaded || !email) return null;
+  if (!signUp || !email) return null;
 
   return (
     <AuthShell
