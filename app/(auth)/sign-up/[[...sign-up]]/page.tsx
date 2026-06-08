@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignUpPage() {
-  const { signUp, isLoaded } = useSignUp();
+  const { signUp } = useSignUp();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -18,9 +18,41 @@ export default function SignUpPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!signUp) return;
+
+  //   if (password !== confirm) {
+  //     setError("Passwords don't match.");
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setError(null);
+
+  //   try {
+  //     await signUp.create({
+  //       emailAddress: email,
+  //       password,
+  //     });
+
+  //     if (signUp.status === "complete") {
+  //       router.push("/dashboard");
+  //     } else {
+  //       // Email verification required
+  //       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+  //       router.push("/verify-email");
+  //     }
+  //   } catch (err: any) {
+  //     setError(err?.errors?.[0]?.message ?? "Sign up failed. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signUp) return;
 
     if (password !== confirm) {
       setError("Passwords don't match.");
@@ -31,15 +63,20 @@ export default function SignUpPage() {
     setError(null);
 
     try {
-      const result = await signUp.create({
+      const { error } = await signUp.create({
         emailAddress: email,
         password,
       });
 
-      if (result.status === "complete") {
+      if (error) {
+        setError(error.longMessage ?? "Sign up failed. Please try again.");
+        return;
+      }
+
+      if (signUp.status === "complete") {
+        await signUp.finalize();
         router.push("/dashboard");
       } else {
-        // Email verification required
         await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
         router.push("/verify-email");
       }
@@ -51,11 +88,10 @@ export default function SignUpPage() {
   };
 
   const handleGoogle = async () => {
-    if (!isLoaded) return;
-    await signUp.authenticateWithRedirect({
+    if (!signUp) return;
+    await signUp.create({
       strategy: "oauth_google",
-      redirectUrl: "/sso-callback",
-      redirectUrlComplete: "/dashboard",
+      transfer: true,
     });
   };
 

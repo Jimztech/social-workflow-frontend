@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function SignInPage() {
-  const { signIn, isLoaded } = useSignIn();
+  const { signIn } = useSignIn();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,17 +19,17 @@ export default function SignInPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isLoaded) return;
+    if (!signIn) return;
     setLoading(true);
     setError(null);
 
     try {
-      const result = await signIn.create({
+      await signIn.create({
         identifier: email,
         password,
       });
 
-      if (result.status === "complete") {
+      if (signIn.status === "complete") {
         router.push("/dashboard");
       }
     } catch (err: any) {
@@ -40,11 +40,10 @@ export default function SignInPage() {
   };
 
   const handleGoogle = async () => {
-    if (!isLoaded) return;
-    await signIn.authenticateWithRedirect({
+    if (!signIn) return;
+    await signIn.create({
       strategy: "oauth_google",
-      redirectUrl: "/sso-callback",
-      redirectUrlComplete: "/dashboard",
+      transfer: true,
     });
   };
 
